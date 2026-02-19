@@ -56,6 +56,9 @@ select = ["E", "F", "I", "N", "W"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+markers = [
+    "e2e: 실제 모델을 사용하는 E2E 테스트 (모델 필요)",
+]
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/airgap_kor_search"]
