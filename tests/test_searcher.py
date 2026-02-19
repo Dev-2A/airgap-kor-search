@@ -258,3 +258,85 @@ class TestSearchEngine:
         )
         with pytest.raises(RuntimeError, match="열려있지 않습니다"):
             engine.search("테스트")
+
+
+# ── 하이라이팅 테스트 ─────────────────────────────────────
+
+
+class TestHighlighting:
+
+    def test_single_keyword(self):
+        result = SearchResult(
+            text="한국어 형태소 분석은 중요합니다.",
+            score=0.9,
+            doc_path="/a.txt",
+            chunk_index=0,
+            highlights=[{"start": 4, "end": 7}],
+        )
+        assert "<mark>형태소</mark>" in result.highlighted_text
+
+    def test_multiple_highlights(self):
+        result = SearchResult(
+            text="FAISS는 벡터 검색 라이브러리입니다.",
+            score=0.8,
+            doc_path="/a.txt",
+            chunk_index=0,
+            highlights=[
+                {"start": 0, "end": 5},
+                {"start": 7, "end": 9},
+            ],
+        )
+        hl = result.highlighted_text
+        assert "<mark>FAISS</mark>" in hl
+        assert "<mark>벡터</mark>" in hl
+
+    def test_no_highlights(self):
+        result = SearchResult(
+            text="아무 하이라이트 없음",
+            score=0.5,
+            doc_path="/a.txt",
+            chunk_index=0,
+        )
+        assert result.highlighted_text == "아무 하이라이트 없음"
+
+    def test_to_dict_includes_highlighted(self):
+        result = SearchResult(
+            text="테스트 문장",
+            score=0.9,
+            doc_path="/a.txt",
+            chunk_index=0,
+            highlights=[{"start": 0, "end": 3}],
+        )
+        d = result.to_dict()
+        assert "highlighted_text" in d
+        assert "<mark>테스트</mark>" in d["highlighted_text"]
+
+    def test_compute_highlights(self):
+        highlights = SearchEngine._compute_highlights(
+            "형태소 분석", "한국어 형태소 분석은 자연어 처리의 기초입니다."
+        )
+        assert len(highlights) >= 1
+        # "형태소"와 "분석" 중 하나 이상 매칭
+        matched_text = [
+            "한국어 형태소 분석은 자연어 처리의 기초입니다."[h["start"]:h["end"]]
+            for h in highlights
+        ]
+        assert any("형태소" in t for t in matched_text)
+
+    def test_compute_highlights_no_match(self):
+        highlights = SearchEngine._compute_highlights(
+            "파이썬", "자바스크립트는 웹 개발 언어입니다."
+        )
+        assert len(highlights) == 0
+
+    def test_compute_highlights_short_tokens_skipped(self):
+        highlights = SearchEngine._compute_highlights(
+            "나 는 좋다", "나는 오늘 기분이 좋다"
+        )
+        # "나", "는" 은 1글자라 스킵, "좋다"만 매칭
+        matched_text = [
+            "나는 오늘 기분이 좋다"[h["start"]:h["end"]]
+            for h in highlights
+        ]
+        assert "좋다" in matched_text
+        assert "나" not in matched_text

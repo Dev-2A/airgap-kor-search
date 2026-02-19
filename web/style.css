@@ -1,438 +1,461 @@
 /* ── 기본 리셋 & 변수 ───────────────────────────────── */
 
 :root {
-    --bg: #0f1117;
-    --surface: #1a1d27;
-    --surface-hover: #232735;
-    --border: #2d3143;
-    --text: #e4e6ed;
-    --text-dim: #8b8fa3;
-    --primary: #4a9eff;
-    --primary-hover: #3a8ae5;
-    --success: #4caf87;
-    --warning: #e5a84c;
-    --danger: #e55a5a;
-    --radius: 8px;
-    --font: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
+  --bg: #0f1117;
+  --surface: #1a1d27;
+  --surface-hover: #232735;
+  --border: #2d3143;
+  --text: #e4e6ed;
+  --text-dim: #8b8fa3;
+  --primary: #4a9eff;
+  --primary-hover: #3a8ae5;
+  --success: #4caf87;
+  --warning: #e5a84c;
+  --danger: #e55a5a;
+  --radius: 8px;
+  --font:
+    "Pretendard", -apple-system, BlinkMacSystemFont, system-ui, sans-serif;
 }
 
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
 body {
-    font-family: var(--font);
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.6;
-    min-height: 100vh;
+  font-family: var(--font);
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
 }
 
 /* ── 레이아웃 ───────────────────────────────────────── */
 
 .container {
-    max-width: 800px;
-    margin: 0 auto;
-    padding: 2rem 1.5rem;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
 }
 
 .header {
-    text-align: center;
-    margin-bottom: 2rem;
+  text-align: center;
+  margin-bottom: 2rem;
 }
 
 .header h1 {
-    font-size: 1.8rem;
-    font-weight: 700;
-    margin-bottom: 0.3rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin-bottom: 0.3rem;
 }
 
 .subtitle {
-    color: var(--text-dim);
-    font-size: 0.95rem;
+  color: var(--text-dim);
+  font-size: 0.95rem;
 }
 
 /* ── 탭 ─────────────────────────────────────────────── */
 
 .tabs {
-    display: flex;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    border-bottom: 1px solid var(--border);
-    padding-bottom: 0;
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 0;
 }
 
 .tab {
-    background: none;
-    border: none;
-    color: var(--text-dim);
-    font-size: 0.95rem;
-    padding: 0.6rem 1.2rem;
-    cursor: pointer;
-    border-bottom: 2px solid transparent;
-    transition: all 0.2s;
-    font-family: var(--font);
+  background: none;
+  border: none;
+  color: var(--text-dim);
+  font-size: 0.95rem;
+  padding: 0.6rem 1.2rem;
+  cursor: pointer;
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+  font-family: var(--font);
 }
 
 .tab:hover {
-    color: var(--text);
+  color: var(--text);
 }
 
 .tab.active {
-    color: var(--primary);
-    border-bottom-color: var(--primary);
+  color: var(--primary);
+  border-bottom-color: var(--primary);
 }
 
 .tab-content {
-    display: none;
+  display: none;
 }
 
 .tab-content.active {
-    display: block;
+  display: block;
 }
 
 /* ── 검색 ───────────────────────────────────────────── */
 
 .search-box {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
-    margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
 }
 
 #search-input {
-    width: 100%;
-    padding: 0.9rem 1rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-size: 1rem;
-    outline: none;
-    transition: border-color 0.2s;
-    font-family: var(--font);
+  width: 100%;
+  padding: 0.9rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 1rem;
+  outline: none;
+  transition: border-color 0.2s;
+  font-family: var(--font);
 }
 
 #search-input:focus {
-    border-color: var(--primary);
+  border-color: var(--primary);
 }
 
 .search-options {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
+  display: flex;
+  gap: 1rem;
+  align-items: center;
 }
 
 .search-options label {
-    color: var(--text-dim);
-    font-size: 0.85rem;
-    display: flex;
-    align-items: center;
-    gap: 0.4rem;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
 }
 
 .search-options select {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 4px;
-    color: var(--text);
-    padding: 0.3rem 0.5rem;
-    font-family: var(--font);
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  color: var(--text);
+  padding: 0.3rem 0.5rem;
+  font-family: var(--font);
 }
 
 .search-meta {
-    color: var(--text-dim);
-    font-size: 0.85rem;
-    margin-bottom: 1rem;
-    padding: 0.5rem 0;
+  color: var(--text-dim);
+  font-size: 0.85rem;
+  margin-bottom: 1rem;
+  padding: 0.5rem 0;
 }
 
 /* ── 버튼 ───────────────────────────────────────────── */
 
 .btn {
-    padding: 0.6rem 1.5rem;
-    border: none;
-    border-radius: var(--radius);
-    font-size: 0.9rem;
-    cursor: pointer;
-    transition: all 0.2s;
-    font-family: var(--font);
-    font-weight: 500;
+  padding: 0.6rem 1.5rem;
+  border: none;
+  border-radius: var(--radius);
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: var(--font);
+  font-weight: 500;
 }
 
 .btn-primary {
-    background: var(--primary);
-    color: #fff;
+  background: var(--primary);
+  color: #fff;
 }
 
 .btn-primary:hover {
-    background: var(--primary-hover);
+  background: var(--primary-hover);
 }
 
 .btn-primary:disabled {
-    background: var(--border);
-    cursor: not-allowed;
+  background: var(--border);
+  cursor: not-allowed;
 }
 
 .btn-secondary {
-    background: var(--surface);
-    color: var(--text);
-    border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  border: 1px solid var(--border);
 }
 
 .btn-secondary:hover {
-    background: var(--surface-hover);
+  background: var(--surface-hover);
 }
 
 .btn-danger {
-    background: transparent;
-    color: var(--danger);
-    border: 1px solid var(--danger);
-    padding: 0.3rem 0.8rem;
-    font-size: 0.8rem;
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+  padding: 0.3rem 0.8rem;
+  font-size: 0.8rem;
 }
 
 .btn-danger:hover {
-    background: var(--danger);
-    color: #fff;
+  background: var(--danger);
+  color: #fff;
 }
 
 /* ── 검색 결과 ──────────────────────────────────────── */
 
 .results {
-    display: flex;
-    flex-direction: column;
-    gap: 0.8rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.8rem;
 }
 
 .result-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem 1.2rem;
-    transition: border-color 0.2s;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem 1.2rem;
+  transition: border-color 0.2s;
 }
 
 .result-card:hover {
-    border-color: var(--primary);
+  border-color: var(--primary);
 }
 
 .result-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 0.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.5rem;
 }
 
 .result-rank {
-    font-weight: 600;
-    font-size: 0.85rem;
+  font-weight: 600;
+  font-size: 0.85rem;
 }
 
-.score-high { color: var(--success); }
-.score-mid { color: var(--warning); }
-.score-low { color: var(--text-dim); }
+.score-high {
+  color: var(--success);
+}
+.score-mid {
+  color: var(--warning);
+}
+.score-low {
+  color: var(--text-dim);
+}
 
 .result-source {
-    color: var(--text-dim);
-    font-size: 0.8rem;
+  color: var(--text-dim);
+  font-size: 0.8rem;
 }
 
 .result-text {
-    font-size: 0.9rem;
-    line-height: 1.7;
-    color: var(--text);
-    word-break: break-word;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text);
+  word-break: break-word;
 }
 
 .empty-state {
-    text-align: center;
-    padding: 3rem 1rem;
-    color: var(--text-dim);
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-dim);
 }
 
 /* ── 인덱싱 ─────────────────────────────────────────── */
 
 .index-section {
-    margin-bottom: 2rem;
+  margin-bottom: 2rem;
 }
 
 .index-section h2 {
-    font-size: 1.1rem;
-    margin-bottom: 0.8rem;
+  font-size: 1.1rem;
+  margin-bottom: 0.8rem;
 }
 
 .input-source {
-    width: 100%;
-    padding: 0.6rem 0.8rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-size: 0.9rem;
-    margin-bottom: 0.5rem;
-    outline: none;
-    font-family: var(--font);
+  width: 100%;
+  padding: 0.6rem 0.8rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  outline: none;
+  font-family: var(--font);
 }
 
 .input-source:focus {
-    border-color: var(--primary);
+  border-color: var(--primary);
 }
 
 textarea {
-    width: 100%;
-    padding: 0.8rem 1rem;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    color: var(--text);
-    font-size: 0.9rem;
-    resize: vertical;
-    outline: none;
-    margin-bottom: 0.8rem;
-    font-family: var(--font);
-    line-height: 1.6;
+  width: 100%;
+  padding: 0.8rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  color: var(--text);
+  font-size: 0.9rem;
+  resize: vertical;
+  outline: none;
+  margin-bottom: 0.8rem;
+  font-family: var(--font);
+  line-height: 1.6;
 }
 
 textarea:focus {
-    border-color: var(--primary);
+  border-color: var(--primary);
 }
 
 .file-upload {
-    margin-bottom: 0.8rem;
+  margin-bottom: 0.8rem;
 }
 
 .file-upload input[type="file"] {
-    color: var(--text);
-    font-family: var(--font);
+  color: var(--text);
+  font-family: var(--font);
 }
 
 .file-hint {
-    color: var(--text-dim);
-    font-size: 0.8rem;
-    margin-top: 0.3rem;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  margin-top: 0.3rem;
 }
 
 .index-result {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem;
-    margin-top: 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  margin-top: 1rem;
 }
 
-.index-result.success { border-color: var(--success); }
-.index-result.error { border-color: var(--danger); }
+.index-result.success {
+  border-color: var(--success);
+}
+.index-result.error {
+  border-color: var(--danger);
+}
 
 /* ── 관리 ───────────────────────────────────────────── */
 
 .manage-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1.2rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.2rem;
 }
 
 .manage-header h2 {
-    font-size: 1.1rem;
+  font-size: 1.1rem;
 }
 
 .stats-box {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 0.8rem;
-    margin-bottom: 1.5rem;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.8rem;
+  margin-bottom: 1.5rem;
 }
 
 .stat-card {
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 1rem;
-    text-align: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1rem;
+  text-align: center;
 }
 
 .stat-value {
-    font-size: 1.8rem;
-    font-weight: 700;
-    color: var(--primary);
+  font-size: 1.8rem;
+  font-weight: 700;
+  color: var(--primary);
 }
 
 .stat-label {
-    color: var(--text-dim);
-    font-size: 0.8rem;
-    margin-top: 0.2rem;
+  color: var(--text-dim);
+  font-size: 0.8rem;
+  margin-top: 0.2rem;
 }
 
 .doc-list {
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .doc-item {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: var(--radius);
-    padding: 0.7rem 1rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 0.7rem 1rem;
 }
 
 .doc-info {
-    flex: 1;
-    min-width: 0;
+  flex: 1;
+  min-width: 0;
 }
 
 .doc-path {
-    font-size: 0.9rem;
-    word-break: break-all;
+  font-size: 0.9rem;
+  word-break: break-all;
 }
 
 .doc-chunks {
-    color: var(--text-dim);
-    font-size: 0.8rem;
+  color: var(--text-dim);
+  font-size: 0.8rem;
 }
 
 /* ── 로딩 ───────────────────────────────────────────── */
 
 .loading {
-    text-align: center;
-    padding: 2rem;
-    color: var(--text-dim);
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-dim);
 }
 
 .spinner {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border: 2px solid var(--border);
-    border-top-color: var(--primary);
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
-    margin-right: 0.5rem;
-    vertical-align: middle;
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  border: 2px solid var(--border);
+  border-top-color: var(--primary);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+  margin-right: 0.5rem;
+  vertical-align: middle;
 }
 
 @keyframes spin {
-    to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ── 하이라이트 ─────────────────────────────────────────── */
+
+mark {
+  background: rgba(74, 158, 255, 0.25);
+  color: var(--text);
+  padding: 1px 2px;
+  border-radius: 2px;
+  border-bottom: 2px solid var(--primary);
 }
 
 /* ── 반응형 ─────────────────────────────────────────── */
 
 @media (max-width: 600px) {
-    .container {
-        padding: 1rem;
-    }
+  .container {
+    padding: 1rem;
+  }
 
-    .stats-box {
-        grid-template-columns: 1fr;
-    }
+  .stats-box {
+    grid-template-columns: 1fr;
+  }
 
-    .header h1 {
-        font-size: 1.4rem;
-    }
+  .header h1 {
+    font-size: 1.4rem;
+  }
 }

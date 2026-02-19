@@ -21,7 +21,6 @@ from airgap_kor_search.config import (
 )
 from airgap_kor_search.searcher import SearchEngine
 
-
 # ── 경로 설정 ─────────────────────────────────────────────
 
 MODEL_DIR = Path("./airgap_data/model")
@@ -105,7 +104,7 @@ class TestE2ESearch:
             for keyword in ["에어갭", "오프라인", "인터넷", "차단", "벡터",
                             "검색", "FAISS", "SQLite"]
         )
-        print(f"\n🔍 '오프라인에서 쓸 수 있는 검색' → 상위 결과:")
+        print("\n🔍 '오프라인에서 쓸 수 있는 검색' → 상위 결과:")
         print(f"   [{response.results[0].score_percent}%] {top_text[:80]}...")
         assert has_relevant, f"관련 없는 결과가 1위: {top_text[:80]}"
 
@@ -171,7 +170,7 @@ class TestE2EIndexing:
         for doc in docs:
             assert doc["chunk_count"] > 0
 
-        print(f"\n📋 문서 목록:")
+        print("\n📋 문서 목록:")
         for doc in docs:
             print(f"   {doc['doc_path']} ({doc['chunk_count']}청크)")
 

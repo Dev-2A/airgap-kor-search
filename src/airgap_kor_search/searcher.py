@@ -7,6 +7,7 @@
 from __future__ import annotations
 
 import logging
+import re
 import time
 from dataclasses import dataclass, field
 from pathlib import Path
@@ -34,20 +35,40 @@ class SearchResult:
     doc_path: str
     chunk_index: int
     metadata: dict = field(default_factory=dict)
+    highlights: list[dict] = field(default_factory=list)
 
     @property
     def score_percent(self) -> float:
         """유사도 점수를 퍼센트로 반환합니다."""
         return round(self.score * 100, 1)
 
+    @property
+    def highlighted_text(self) -> str:
+        """하이라이트 마커가 삽입된 텍스트를 반환합니다.
+
+        <mark>...</mark> 태그로 감싸진 텍스트를 반환합니다.
+        """
+        if not self.highlights:
+            return self.text
+
+        # 위치 기준 내림차순 정렬 (뒤에서부터 삽입해야 인덱스가 안 밀림)
+        sorted_hl = sorted(self.highlights, key=lambda h: h["start"], reverse=True)
+        result = self.text
+        for hl in sorted_hl:
+            s, e = hl["start"], hl["end"]
+            result = result[:s] + "<mark>" + result[s:e] + "</mark>" + result[e:]
+        return result
+
     def to_dict(self) -> dict:
         return {
             "text": self.text,
+            "highlighted_text": self.highlighted_text,
             "score": self.score,
             "score_percent": self.score_percent,
             "doc_path": self.doc_path,
             "chunk_index": self.chunk_index,
             "metadata": self.metadata,
+            "highlights": self.highlights,
         }
 
 
@@ -288,6 +309,7 @@ class SearchEngine:
         texts = [chunk.text for chunk in chunks]
         return self.embedder.encode(texts)
 
+
     # ── 검색 ──────────────────────────────────────────────
 
     def search(
@@ -332,6 +354,7 @@ class SearchEngine:
                 doc_path=r["doc_path"],
                 chunk_index=r["chunk_index"],
                 metadata=r.get("metadata", {}),
+                highlights=self._compute_highlights(query, r["text"]),
             )
             for r in raw_results
         ]
@@ -352,6 +375,46 @@ class SearchEngine:
             elapsed_ms,
         )
         return response
+
+    @staticmethod
+    def _compute_highlights(query: str, text: str) -> list[dict]:
+        """쿼리 키워드 기반 하이라이트 구간을 계산합니다.
+
+        단순 키워드 매칭 + 공백 분리 토큰 매칭을 수행합니다.
+        """
+        highlights = []
+        seen_ranges = set()
+
+        # 쿼리를 공백으로 분리하여 각 토큰 매칭
+        tokens = query.strip().split()
+
+        # 1단계: 전체 쿼리 문자열 매칭 (가장 우선)
+        if len(tokens) > 1:
+            for m in re.finditer(re.escape(query), text, re.IGNORECASE):
+                rng = (m.start(), m.end())
+                if rng not in seen_ranges:
+                    highlights.append({"start": rng[0], "end": rng[1]})
+                    seen_ranges.add(rng)
+
+        # 2단계: 개별 토큰 매칭 (2글자 이상만)
+        for token in tokens:
+            if len(token) < 2:
+                continue
+            for m in re.finditer(re.escape(token), text, re.IGNORECASE):
+                rng = (m.start(), m.end())
+                # 기존 하이라이트와 겹치지 않는 경우만
+                overlaps = any(
+                    not (rng[1] <= s or rng[0] >= e)
+                    for s, e in seen_ranges
+                )
+                if not overlaps:
+                    highlights.append({"start": rng[0], "end": rng[1]})
+                    seen_ranges.add(rng)
+
+        # 위치순 정렬
+        highlights.sort(key=lambda h: h["start"])
+        return highlights
+
 
     # ── 관리 ──────────────────────────────────────────────
 
