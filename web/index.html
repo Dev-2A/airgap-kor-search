@@ -1,14 +1,98 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ko">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>airgap-kor-search</title>
-    <link rel="stylesheet" href="style.css" />
-  </head>
-  <body>
-    <h1>🔍 에어갭 한국어 문서 검색</h1>
-    <p>Web UI는 Step 9에서 구현됩니다.</p>
-    <script src="app.js"></script>
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>🔍 에어갭 한국어 문서 검색</title>
+  <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+  <div class="container">
+    <!-- 헤더 -->
+    <header class="header">
+      <h1>🔍 에어갭 한국어 문서 검색</h1>
+      <p class="subtitle">오프라인 시맨틱 검색 엔진</p>
+    </header>
+
+    <!-- 탭 네비게이션 -->
+    <nav class="tabs">
+      <button class="tab active" data-tab="search">검색</button>
+      <button class="tab" data-tab="index">인덱싱</button>
+      <button class="tab" data-tab="manage">관리</button>
+    </nav>
+
+    <!-- 검색 탭 -->
+    <section id="tab-search" class="tab-content active">
+      <div class="search-box">
+        <input
+          type="text"
+          id="search-input"
+          placeholder="검색어를 입력하세요..."
+          autocomplete="off"
+        >
+        <div class="search-options">
+          <label>
+            결과 수:
+            <select id="top-k">
+              <option value="3">3</option>
+              <option value="5">5</option>
+              <option value="10">10</option>
+              <option value="20">20</option>
+            </select>
+          </label>
+        </div>
+        <button id="search-btn" class="btn btn-primary">검색</button>
+      </div>
+
+      <div id="search-meta" class="search-meta" style="display:none;"></div>
+      <div id="search-results" class="results"></div>
+      <div id="search-empty" class="empty-state">
+        <p>🔍 검색어를 입력하고 Enter를 눌러주세요.</p>
+      </div>
+    </section>
+
+    <!-- 인덱싱 탭 -->
+    <section id="tab-index" class="tab-content">
+      <div class="index-section">
+        <h2>📄 텍스트 직접 입력</h2>
+        <input
+          type="text"
+          id="text-source"
+          placeholder="출처 (예: 메모, 회의록)"
+          class="input-source"
+        >
+        <textarea 
+          id="text-input"
+          placeholder="인덱싱할 텍스트를 입력하세요..."
+          rows="8"
+        ></textarea>
+        <button id="index-text-btn" class="btn btn-primary">텍스트 인덱싱</button>
+      </div>
+
+      <div class="index-section">
+        <h2>📁 파일 업로드</h2>
+        <div class="file-upload">
+          <input type="file" id="file-input" accept=".txt,.md,.pdf,.docx">
+          <p class="file-hint">지원 형식: .txt, .md, .pdf, .docx</p>
+        </div>
+        <button id="index-file-btn" class="btn btn-primary">파일 인덱싱</button>
+      </div>
+
+      <div id="index-result" class="index-result" style="display:none;"></div>
+    </section>
+
+    <!-- 관리 탭 -->
+    <section id="tab-manage" class="tab-content">
+      <div class="manage-header">
+        <h2>📊 인덱승 현황</h2>
+        <button id="refresh-btn" class="btn btn-secondary">새로고침</button>
+      </div>
+
+      <div id="stats-box" class="stats-box"></div>
+      <div id="doc-list" class="doc-list"></div>
+    </section>
+  </div>
+
+  <script src="/static/app.js"></script>
+</body>
 </html>
