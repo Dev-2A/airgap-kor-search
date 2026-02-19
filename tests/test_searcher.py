@@ -6,8 +6,8 @@
 import numpy as np
 import pytest
 
-from airgap_kor_search.chunker import Chunk, Document, TextChunker
-from airgap_kor_search.config import AppConfig, IndexConfig, ModelConfig, ChunkConfig, SearchConfig
+from airgap_kor_search.chunker import TextChunker
+from airgap_kor_search.config import AppConfig, ChunkConfig, IndexConfig, ModelConfig, SearchConfig
 from airgap_kor_search.indexer import Indexer
 from airgap_kor_search.searcher import (
     IndexingResult,
@@ -15,7 +15,6 @@ from airgap_kor_search.searcher import (
     SearchResponse,
     SearchResult,
 )
-
 
 DIM = 128
 

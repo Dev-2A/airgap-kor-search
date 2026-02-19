@@ -13,7 +13,6 @@ Click 기반 커맨드라인 인터페이스를 제공합니다.
 from __future__ import annotations
 
 import logging
-import sys
 from pathlib import Path
 from typing import Optional
 
@@ -45,7 +44,7 @@ def setup_logging(verbose: bool = False) -> None:
 def get_engine(config_path: Optional[str] = None):
     """SearchEngine 인스턴스를 생성합니다."""
     from airgap_kor_search.searcher import SearchEngine
-    
+
     return SearchEngine.from_config_path(config_path)
 
 
@@ -84,16 +83,16 @@ def main(ctx: click.Context, config: Optional[str], verbose: bool) -> None:
 @click.pass_context
 def index(ctx: click.Context, path: str, no_recursive: bool) -> None:
     """문서를 인덱싱합니다.
-    
+
     PATH는 파일 또는 디렉토리 경로입니다.
     """
     config_path = ctx.obj["config_path"]
     target = Path(path)
-    
+
     with console.status("[bold green]인덱싱 준비 중..."):
         engine = get_engine(config_path)
         engine.open()
-    
+
     try:
         if target.is_file():
             console.print(f"📄 파일 인덱싱: [cyan]{target}[/cyan]")
@@ -112,15 +111,15 @@ def index(ctx: click.Context, path: str, no_recursive: bool) -> None:
             )
             with console.status("[bold green]인덱싱 중..."):
                 result = engine.index_directory(target, recursive=recursive)
-        
+
         # 결과 출력
         _print_indexing_result(result)
-        
+
         if result.errors:
             console.print("\n[yellow]⚠️ 경고:[/yellow]")
             for err in result.errors:
                 console.print(f"  • {err}")
-    
+
     finally:
         engine.close()
 
@@ -130,11 +129,11 @@ def _print_indexing_result(result) -> None:
     table = Table(title="인덱싱 결과", show_header=False, border_style="green")
     table.add_column("항목", style="bold")
     table.add_column("값", justify="right")
-    
+
     table.add_row("처리된 문서", f"{result.documents_processed}개")
     table.add_row("생성된 청크", f"{result.chunks_created}개")
     table.add_row("소요 시간", f"{result.elapsed_sec:.2f}초")
-    
+
     console.print(table)
 
 
@@ -158,23 +157,23 @@ def search(
     threshold: Optional[float],
 ) -> None:
     """쿼리로 문서를 검색합니다.
-    
+
     QUERY는 검색할 한국어 텍스트입니다.
     """
     config_path = ctx.obj["config_path"]
-    
+
     with console.status("[bold green]검색 엔진 로딩 중..."):
         engine = get_engine(config_path)
         engine.open()
-    
+
     try:
         with console.status(f"[bold green]검색 중: '{query}'"):
             response = engine.search(
                 query, top_k=top_k, score_threshold=threshold
             )
-        
+
         _print_search_response(response)
-    
+
     finally:
         engine.close()
 
@@ -187,7 +186,7 @@ def _print_search_response(response) -> None:
     header.append(f" ({response.elapsed_ms:.1f}ms)", style="dim")
     console.print(header)
     console.print()
-    
+
     if not response.results:
         console.print("[yellow]검색 결과가 없습니다.[/yellow]")
         console.print("💡 다른 키워드로 시도하거나, 문서를 먼저 인덱싱해주세요.")
@@ -225,28 +224,28 @@ def _print_search_response(response) -> None:
 def list_docs(ctx: click.Context) -> None:
     """인덱싱된 문서 목록을 출력합니다."""
     config_path = ctx.obj["config_path"]
-    
+
     engine = get_engine(config_path)
     engine.open()
-    
+
     try:
         docs = engine.list_documents()
-        
+
         if not docs:
             console.print("[yellow]인덱싱된 문서가 없습니다.[/yellow]")
             console.print("💡 [cyan]airgap-kor-search index <경로>[/cyan]로 문서를 추가하세요.")
             return
-        
+
         table = Table(title=f"인덱싱된 문서 ({len(docs)}개)")
         table.add_column("#", style="dim", justify="right")
         table.add_column("문서 경로", style="cyan")
         table.add_column("청크 수", justify="right")
-        
+
         for i, doc in enumerate(docs, 1):
             table.add_row(str(i), doc["doc_path"], f"{doc['chunk_count']}개")
-        
+
         console.print(table)
-    
+
     finally:
         engine.close()
 
@@ -260,29 +259,29 @@ def list_docs(ctx: click.Context) -> None:
 @click.pass_context
 def delete(ctx: click.Context, doc_path: str, yes: bool) -> None:
     """인덱스에서 문서를 삭제합니다.
-    
+
     DOC_PATH는 인덱싱 시 사용한 문서 경로입니다.
     """
     config_path = ctx.obj["config_path"]
-    
+
     engine = get_engine(config_path)
     engine.open()
-    
+
     try:
         if not yes:
             if not click.confirm(f"'{doc_path}'을(를) 인덱스에서 삭제하시겠습니까?"):
                 console.print("[dim]취소되었습니다.[/dim]")
                 return
-        
+
         deleted = engine.delete_document(doc_path)
-        
+
         if deleted > 0:
             console.print(
                 f"[green]✅ 삭제 완료:[/green] {doc_path} ({deleted}개 청크)"
             )
         else:
             console.print(f"[yellow]해당 문서를 찾을 수 없습니다: {doc_path}[/yellow]")
-    
+
     finally:
         engine.close()
 
@@ -295,13 +294,13 @@ def delete(ctx: click.Context, doc_path: str, yes: bool) -> None:
 def stats(ctx: click.Context) -> None:
     """인덱스 통계를 출력합니다."""
     config_path = ctx.obj["config_path"]
-    
+
     engine = get_engine(config_path)
     engine.open()
-    
+
     try:
         s = engine.get_stats()
-        
+
         table = Table(title="📊 인덱스 통계", show_header=False, border_style="blue")
         table.add_column("항목", style="bold")
         table.add_column("값", justify="right")
@@ -326,13 +325,13 @@ def stats(ctx: click.Context) -> None:
 def serve(ctx: click.Context, host: Optional[str], port: Optional[int]) -> None:
     """웹 UI 서버를 실행합니다."""
     from airgap_kor_search.config import load_or_create_config
-    
+
     config_path = ctx.obj["config_path"]
     config = load_or_create_config(config_path)
-    
+
     host = host or config.server.host
     port = port or config.server.port
-    
+
     console.print(
         Panel(
             f"[bold green]🌐 웹 서버 시작[/bold green]\n\n"
@@ -341,11 +340,11 @@ def serve(ctx: click.Context, host: Optional[str], port: Optional[int]) -> None:
             border_style="green",
         )
     )
-    
-    from airgap_kor_search.server import create_app
-    
+
     import uvicorn
-    
+
+    from airgap_kor_search.server import create_app
+
     app = create_app(config_path)
     uvicorn.run(app, host=host, port=port, log_level="info")
 
@@ -364,20 +363,20 @@ def serve(ctx: click.Context, host: Optional[str], port: Optional[int]) -> None:
 def init(ctx: click.Context, data_dir: str) -> None:
     """설정 파일과 디렉토리를 초기화합니다."""
     from airgap_kor_search.config import AppConfig
-    
+
     data_path = Path(data_dir)
     config_path = data_path / "config.json"
-    
+
     if config_path.exists():
         if not click.confirm(f"설정 파일이 이미 존재합니다: {config_path}\n덮어쓰시겠습니까?"):
             console.print("[dim]취소되었습니다.[/dim]")
             return
-    
+
     config = AppConfig(data_dir=data_path)
     config.ensure_dirs()
     config.save(config_path)
-    
-    console.print(f"[green]✅ 초기화 완료[/green]")
+
+    console.print("[green]✅ 초기화 완료[/green]")
     console.print()
     console.print(f"  설정 파일: [cyan]{config_path}[/cyan]")
     console.print(f"  데이터 디렉토리: [cyan]{data_path}[/cyan]")

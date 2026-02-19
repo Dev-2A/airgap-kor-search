@@ -7,7 +7,6 @@ from airgap_kor_search.chunker import Chunk
 from airgap_kor_search.config import IndexConfig
 from airgap_kor_search.indexer import Indexer, MetadataStore, VectorIndex
 
-
 DIM = 128  # 테스트용 저차원
 
 

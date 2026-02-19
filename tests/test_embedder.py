@@ -3,14 +3,13 @@
 실제 ONNX 모델 파일 없이 mock을 사용하여 로직을 검증합니다.
 """
 
-from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import numpy as np
 import pytest
 
 from airgap_kor_search.config import ModelConfig
-from airgap_kor_search.embedder import OnnxEmbedder, MeanPoolingEmbedder
+from airgap_kor_search.embedder import MeanPoolingEmbedder, OnnxEmbedder
 
 
 class TestOnnxEmbedder:

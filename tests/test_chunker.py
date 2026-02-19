@@ -1,17 +1,15 @@
 """chunker 모듈 테스트"""
 
-from pathlib import Path
 
 import pytest
 
-from airgap_kor_search.config import ChunkConfig
 from airgap_kor_search.chunker import (
-    Document,
     Chunk,
+    Document,
     DocumentReader,
     TextChunker,
 )
-
+from airgap_kor_search.config import ChunkConfig
 
 # ── DocumentReader 테스트 ─────────────────────────────────
 
@@ -109,8 +107,10 @@ class TestTextChunker:
     def test_paragraph_split(self):
         chunker = TextChunker(chunk_size=100, chunk_overlap=0, min_chunk_length=10)
         text = (
-            "첫 번째 문단입니다. 여기에는 충분히 긴 내용이 들어가야 합니다. 그래야 청크가 분리됩니다.\n\n"
-            "두 번째 문단입니다. 이 문단도 마찬가지로 충분히 긴 내용을 담고 있어야 테스트가 통과합니다."
+            "첫 번째 문단입니다. 여기에는 충분히 긴 내용이 들어가야 합니다. "
+            "그래야 청크가 분리됩니다.\n\n"
+            "두 번째 문단입니다. 이 문단도 마찬가지로 충분히 긴 내용을 담고 있어야 "
+            "테스트가 통과합니다."
         )
 
         result = chunker.chunk_text(text)
