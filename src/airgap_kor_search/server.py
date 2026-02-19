@@ -21,7 +21,7 @@ logger = logging.getLogger(__name__)
 
 # ── 전역 엔진 참조 ───────────────────────────────────────
 
-_engine = Optional[SearchEngine] = None
+_engine: Optional[SearchEngine] = None
 
 WEB_DIR = Path(__file__).parent.parent.parent / "web"
 
