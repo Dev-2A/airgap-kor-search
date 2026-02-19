@@ -86,6 +86,7 @@ def index(ctx: click.Context, path: str, no_recursive: bool) -> None:
 
     PATH는 파일 또는 디렉토리 경로입니다.
     """
+
     config_path = ctx.obj["config_path"]
     target = Path(path)
 
@@ -98,30 +99,94 @@ def index(ctx: click.Context, path: str, no_recursive: bool) -> None:
             console.print(f"📄 파일 인덱싱: [cyan]{target}[/cyan]")
             with console.status("[bold green]인덱싱 중..."):
                 result = engine.index_file(target)
+            _print_indexing_result(result)
         else:
             recursive = not no_recursive
-            file_count = sum(
-                1 for f in target.rglob("*") if f.is_file()
-            ) if recursive else sum(
-                1 for f in target.iterdir() if f.is_file()
-            )
-            console.print(
-                f"📂 디렉토리 인덱싱: [cyan]{target}[/cyan] "
-                f"(약 {file_count}개 파일, 재귀={'예' if recursive else '아니오'})"
-            )
-            with console.status("[bold green]인덱싱 중..."):
-                result = engine.index_directory(target, recursive=recursive)
+            _index_directory_with_progress(engine, target, recursive)
 
-        # 결과 출력
-        _print_indexing_result(result)
-
-        if result.errors:
-            console.print("\n[yellow]⚠️ 경고:[/yellow]")
-            for err in result.errors:
-                console.print(f"  • {err}")
+        console.print()
 
     finally:
         engine.close()
+
+
+def _index_directory_with_progress(engine, directory: Path, recursive: bool) -> None:
+    """Rich progress bar를 사용하여 디렉토리를 인덱싱합니다."""
+    from rich.progress import (
+        BarColumn,
+        MofNCompleteColumn,
+        Progress,
+        SpinnerColumn,
+        TextColumn,
+        TimeElapsedColumn,
+    )
+
+    console.print(f"📂 디렉토리 인덱싱: [cyan]{directory}[/cyan]")
+    console.print()
+
+    doc_progress = Progress(
+        SpinnerColumn(),
+        TextColumn("[bold blue]{task.description}"),
+        BarColumn(bar_width=30),
+        MofNCompleteColumn(),
+        TimeElapsedColumn(),
+        console=console,
+    )
+
+    embed_progress = Progress(
+        TextColumn("  ⚡ 임베딩"),
+        BarColumn(bar_width=30),
+        MofNCompleteColumn(),
+        console=console,
+    )
+
+    doc_task = None
+    embed_task = None
+
+    def on_doc_start(doc_idx, total_docs, filename):
+        nonlocal doc_task
+        if doc_task is None:
+            doc_task = doc_progress.add_task("문서 처리 중", total=total_docs)
+            doc_progress.start()
+        doc_progress.update(doc_task, description=f"📄 {filename}")
+
+    def on_doc_done(doc_idx, chunk_count):
+        nonlocal embed_task
+        if doc_task is not None:
+            doc_progress.advance(doc_task)
+        # 임베딩 progress 리셋
+        if embed_task is not None:
+            embed_progress.stop()
+            embed_task = None
+
+    def on_embed_progress(current, total):
+        nonlocal embed_task
+        if embed_task is None:
+            embed_progress.start()
+            embed_task = embed_progress.add_task("임베딩", total=total)
+        embed_progress.update(embed_task, completed=current)
+
+    result = engine.index_directory_with_progress(
+        directory,
+        recursive=recursive,
+        on_doc_start=on_doc_start,
+        on_doc_done=on_doc_done,
+        on_embed_progress=on_embed_progress,
+    )
+
+    # progress 정리
+    if doc_task is not None:
+        doc_progress.stop()
+    if embed_task is not None:
+        embed_progress.stop()
+
+    console.print()
+    _print_indexing_result(result)
+
+    if result.errors:
+        console.print("\n[yellow]⚠️ 경고:[/yellow]")
+        for err in result.errors:
+            console.print(f"  • {err}")
 
 
 def _print_indexing_result(result) -> None:

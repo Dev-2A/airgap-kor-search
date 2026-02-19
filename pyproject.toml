@@ -4,7 +4,7 @@ build-backend = "hatchling.build"
 
 [project]
 name = "airgap-kor-search"
-version = "0.1.0"
+version = "0.2.0"
 description = "에어갭 환경을 위한 경량 한국어 문서 검색 엔진"
 readme = "README.md"
 license = { text = "MIT" }

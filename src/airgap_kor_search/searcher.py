@@ -276,6 +276,107 @@ class SearchEngine:
             errors=errors,
         )
 
+    def index_directory_with_progress(
+        self,
+        directory: str | Path,
+        recursive: bool = True,
+        on_doc_start: Optional[callable] = None,
+        on_doc_done: Optional[callable] = None,
+        on_embed_progress: Optional[callable] = None,
+    ) -> IndexingResult:
+        """콜백을 통해 진행 상황을 보고하면서 디렉토리를 인덱싱합니다.
+
+        Args:
+            directory: 문서 디렉토리 경로
+            recursive: 하위 디렉토리 탐색 여부
+            on_doc_start: 문서 처리 시작 시 호출 (doc_index, total_docs, filename)
+            on_doc_done: 문서 처리 완료 시 호출 (doc_index, chunk_count)
+            on_embed_progress: 임베딩 진행 시 호출 (current, total)
+
+        Returns:
+            IndexingResult 객체
+        """
+        self._ensure_open()
+        start = time.time()
+        errors = []
+
+        try:
+            documents = DocumentReader.read_directory(directory, recursive=recursive)
+        except Exception as e:
+            return IndexingResult(
+                documents_processed=0,
+                chunks_created=0,
+                elapsed_sec=time.time() - start,
+                errors=[str(e)],
+            )
+
+        if not documents:
+            return IndexingResult(
+                documents_processed=0,
+                chunks_created=0,
+                elapsed_sec=time.time() - start,
+                errors=["지원하는 문서를 찾을 수 없습니다."],
+            )
+
+        total_chunks_created = 0
+
+        for doc_idx, doc in enumerate(documents):
+            filename = doc.metadata.get("filename", doc.path)
+
+            if on_doc_start:
+                on_doc_start(doc_idx, len(documents), filename)
+
+            try:
+                chunks = self.chunker.chunk_document(doc)
+
+                if chunks:
+                    # 배치 임베딩 + 진행률
+                    vectors = self._embed_chunks_with_progress(
+                        chunks, on_embed_progress
+                    )
+                    self.indexer.add_chunks(chunks, vectors)
+                    total_chunks_created += len(chunks)
+
+                if on_doc_done:
+                    on_doc_done(doc_idx, len(chunks) if chunks else 0)
+
+            except Exception as e:
+                logger.warning("문서 처리 실패 (%s): %s", filename, e)
+                errors.append(f"{filename}: {e}")
+                if on_doc_done:
+                    on_doc_done(doc_idx, 0)
+
+        # 전체 완료 후 저장
+        if total_chunks_created > 0:
+            self.indexer.save()
+
+        return IndexingResult(
+            documents_processed=len(documents),
+            chunks_created=total_chunks_created,
+            elapsed_sec=time.time() - start,
+            errors=errors,
+        )
+
+    def _embed_chunks_with_progress(
+        self,
+        chunks: list[Chunk],
+        on_progress: Optional[callable] = None,
+    ) -> np.ndarray:
+        """진행률 콜백을 지원하는 임베딩"""
+        texts = [chunk.text for chunk in chunks]
+        batch_size = self.config.model.batch_size
+        all_embeddings = []
+
+        for i in range(0, len(texts), batch_size):
+            batch = texts[i:i + batch_size]
+            vectors = self.embedder.encode(batch)
+            all_embeddings.append(vectors)
+
+            if on_progress:
+                on_progress(min(i + batch_size, len(texts)), len(texts))
+
+        return np.vstack(all_embeddings).astype(np.float32)
+
     def index_text(self, text: str, source: str = "<직접 입력>") -> IndexingResult:
         """텍스트를 직접 인덱싱합니다."""
         self._ensure_open()

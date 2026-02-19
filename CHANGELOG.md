@@ -2,6 +2,21 @@
 
 모든 주요 변경 사항을 이 파일에 기록합니다.
 
+## [0.2.0] - 2026-02-19
+
+### 추가
+
+- 🧪 E2E 테스트 (실제 ONNX 모델을 사용한 검색 검증)
+- ✨ 검색어 하이라이팅 (키워드 매칭 + 웹 UI mark 태그)
+- 📊 CLI 인덱싱 진행률 표시 (Rich progress bar)
+- 📥 모델 다운로드 & ONNX 변환 스크립트 (`scripts/download_model.py`)
+- 📄 샘플 한국어 문서 (테스트 픽스처)
+
+### 변경
+
+- SearchResult에 `highlights`, `highlighted_text` 필드 추가
+- SearchEngine에 콜백 기반 `index_directory_with_progress` 메서드 추가
+
 ## [0.1.0] - 2026-02-19
 
 ### 추가
